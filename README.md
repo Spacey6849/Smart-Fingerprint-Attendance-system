@@ -1,8 +1,4 @@
-Here's your enhanced README.md with mobile access instructions and improved formatting:
-
 # Smart Fingerprint Attendance System
-
-![System Overview](https://via.placeholder.com/800x400?text=Smart+Fingerprint+Attendance+System) *(Add actual screenshot later)*
 
 A web-based attendance management system using fingerprint authentication, built with PHP and MySQL, designed to run on local networks (XAMPP) with mobile device support.
 
