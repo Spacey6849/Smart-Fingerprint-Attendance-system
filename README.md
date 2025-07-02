@@ -21,7 +21,7 @@ A web-based attendance management system using fingerprint authentication, built
 
 1. **Clone or Download the Repository**
     ```bash
-    git clone https://github.com/yourusername/smart-fingerprint-attendance-system.git
+    git clone https://github.com/Spacey6849/smart-fingerprint-attendance-system.git
     ```
 
 2. **Copy to XAMPP Directory**
