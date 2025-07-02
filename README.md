@@ -1,19 +1,18 @@
-Here's the updated text file with the Task Scheduler trigger instructions added:
-
 # Smart Fingerprint Attendance System
 
 A web-based attendance management system using fingerprint authentication, built with PHP and MySQL, designed to run locally with XAMPP.
 
 ## Features
 
-- **Fingerprint-based attendance**: Integrates with fingerprint hardware for secure student check-in.
-- **Admin dashboard**: View, filter, and export attendance records.
-- **Flexible filtering**: Filter attendance by month, specific date, subject, batch, or student.
-- **Statistics & charts**: Visualize attendance data with interactive graphs (Chart.js).
-- **Student info**: View student contact details.
-- **CSV export**: Download filtered attendance data.
-- **Responsive UI**: Clean, modern interface for desktop and mobile.
-- **Automated tasks**: Automatic marking of absent students and email reports.
+- **Fingerprint-based attendance**: Integrates with fingerprint hardware for secure student check-in
+- **Admin dashboard**: View, filter, and export attendance records
+- **Flexible filtering**: Filter attendance by month, specific date, subject, batch, or student
+- **Statistics & charts**: Visualize attendance data with interactive graphs (Chart.js)
+- **Student info**: View student contact details
+- **CSV export**: Download filtered attendance data
+- **Responsive UI**: Clean, modern interface for desktop and mobile
+- **Automated tasks**: Automatic marking of absent students and email reports
+- **Timetable integration**: Class schedules stored in database
 
 ## Requirements
 
@@ -31,99 +30,87 @@ A web-based attendance management system using fingerprint authentication, built
 2. **Copy to XAMPP Directory**
     - Move the project folder to `C:\xampp\htdocs\attendance_system`
 
-3. **Import the Database**
+3. **Start XAMPP Services**
+    - Start Apache and MySQL from the XAMPP Control Panel
+
+4. **Create Database**
     - Open [phpMyAdmin](http://localhost/phpmyadmin/)
-    - Create a new database (e.g., `attendance_system`)
-    - Import the provided SQL file:  
-      `database/attendance_system.sql`
+    - Create a new database named `attendance_db`
 
-4. **Configure Database Connection**
-    - Edit `includes/config.php` and set your MySQL username/password if different from default (`root`/no password).
+5. **Import Database Structure**
+    - In phpMyAdmin, select the `attendance_db` database
+    - Click "Import" tab
+    - Choose the `attendance_db.sql` file from the project's database folder
+    - Click "Go" to import
 
-5. **Start XAMPP Services**
-    - Start Apache and MySQL from the XAMPP Control Panel.
+6. **Configure Database Connection**
+    - Edit `includes/config.php` and set your MySQL credentials:
+    ```php
+    $db_host = 'localhost';
+    $db_user = 'root';          // Default XAMPP username
+    $db_pass = '';              // Default XAMPP password (empty)
+    $db_name = 'attendance_db'; // Database name
+    ```
 
-6. **Access the Application**
+7. **Access the Application**
     - Open your browser and go to:  
       [http://localhost/attendance_system/admin/studentdashboard.php](http://localhost/attendance_system/admin/studentdashboard.php)
 
-7. **Set Up Automated Tasks in Windows Task Scheduler**
-    - Open Task Scheduler (search for "Task Scheduler" in Windows Start menu)
-    - Click "Create Task" in the right panel
-    - General tab:
-      - Name: "Mark Absent Students"
-      - Description: "Automatically marks students as absent at scheduled time"
-      - Select "Run whether user is logged on or not"
-    - Triggers tab:
-      - Click "New"
-      - Set to "Daily" at your preferred time (e.g. 6:00 PM)
-      - Click OK
-    - Actions tab:
-      - Click "New"
-      - Action: "Start a program"
-      - Program/script: `C:\Users\moses\Downloads\curl-8.13.0_4-win64-mingw\curl-8.13.0_4-win64-mingw\bin\curl.exe`
-      - Arguments: `-s http://localhost/attendance_system/api/api.php?action=mark_absent_students`
-      - Click OK
-    - Repeat the process for the email reports:
-      - Daily report:
-        - Name: "Send Daily Attendance Report"
-        - Set trigger time (e.g. 6:30 PM)
-        - Same curl path
-        - Arguments: `-s http://localhost/attendance_system/api/sendreport.php`
-      - Monthly report:
-        - Name: "Send Monthly Attendance Report"
-        - Set trigger to "Monthly" on day 1 at specific time
-        - Same curl path
-        - Arguments: `-s http://localhost/attendance_system/api/monthlyreport.php`
+## Database Structure
 
-## Directory Structure
+The system uses the following main tables:
 
-```
-attendance_system/
-├── admin/
-│   ├── studentdashboard.php
-│   └── ... (other admin files)
-├── api/
-│   ├── api.php
-│   ├── sendreport.php
-│   ├── monthlyreport.php
-│   └── test.php
-├── includes/
-│   └── config.php
-├── database/
-│   └── attendance_system.sql
-├── assets/
-│   ├── css/
-│   └── js/
-└── export.php
-```
+### `students` Table
+- Stores student information including:
+  - Name, roll number, email, phone
+  - Fingerprint IDs (for biometric authentication)
+  - Batch and class information
 
-## Usage
+### `attendance_logs` Table
+- Records all attendance events with:
+  - Student ID and name
+  - Timestamp and class period
+  - Subject and attendance status (Present/Absent/Late)
+  - Device ID and sync status
 
-- **Admin Dashboard**:  
-  Log in as admin to view and filter attendance records, view statistics, and export data.
-- **Attendance Logging**:  
-  Students scan their fingerprint; attendance is automatically recorded in the system.
-- **Filtering**:  
-  Use the filter form to select by month, specific date, subject, batch, or student.
-- **Automated Tasks**:
-  - Absent students are automatically marked daily
-  - Daily and monthly attendance reports are sent via email automatically
+### Timetable Tables (`e1_timetable`, `e2_timetable`)
+- Stores class schedules for different batches
+- Contains periods for each day of the week
+- Used to determine expected attendance
+
+## Automated Tasks Setup (Windows Task Scheduler)
+
+1. **Mark Absent Students**
+   - Creates daily records for students who didn't check in
+   - Set to run at end of school day (e.g. 6:00 PM)
+
+2. **Daily Attendance Report**
+   - Emails daily summary to administrators
+   - Set to run after absent marking (e.g. 6:30 PM)
+
+3. **Monthly Attendance Report**
+   - Emails monthly summary on 1st of each month
+   - Provides overview of attendance trends
+
+## Sample Data
+
+The database comes pre-loaded with:
+- 4 sample students across 2 batches (E1 and E2)
+- Sample attendance records for multiple days
+- Complete timetable for both batches
 
 ## Customization
 
-- **Add/Remove Batches**:  
-  Update batch options in the filter dropdown and database as needed.
-- **Subjects**:  
-  Subjects are auto-populated from attendance records.
-- **Email Recipients**:  
-  Modify the report scripts to change who receives the automated emails.
+- **Add/Remove Students**: Modify the `students` table
+- **Update Timetables**: Edit the `e1_timetable` and `e2_timetable` tables
+- **Email Recipients**: Modify the report scripts
+- **Class Periods**: Adjust in the timetable tables
 
 ## Notes
 
-- This project is for educational/demo purposes. For production, secure authentication and hardware integration are required.
-- Fingerprint hardware integration is assumed to be handled by a separate module that communicates with the API.
-- The curl commands are configured to run silently (with -s flag) and output to NUL to avoid popups.
+- Fingerprint hardware integration requires compatible scanner
+- For production use, implement proper security measures
+- Test all automated tasks after setup
 
 ## License
 
