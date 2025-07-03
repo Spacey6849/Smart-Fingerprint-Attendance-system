@@ -2,7 +2,6 @@
 
 ![WhatsApp Image 2025-07-03 at 04 06 16_1dc339d5](https://github.com/user-attachments/assets/8b81693c-8fad-4796-956b-4ef6a5f9e250)
 
-
 A complete biometric attendance system with hardware integration and web interface, supporting both local network and mobile access.
 
 ## Key Features
@@ -102,6 +101,35 @@ A complete biometric attendance system with hardware integration and web interfa
    http://[YOUR_LOCAL_IP]/attendance_system
    ```
 
+## Automation Setup
+
+### Windows Task Scheduler Configuration
+
+#### 1. Automated Absence Marking
+1. Open **Task Scheduler** (search in Start menu)
+2. Click **Create Task** in right panel
+3. **General tab**:
+   - Name: "Mark Absent Students"
+   - Description: "Automatically marks students as absent at scheduled time"
+   - Select "Run whether user is logged on or not"
+4. **Triggers tab**:
+   - Click "New"
+   - Set to "Daily" at preferred time (e.g. 6:00 PM)
+5. **Actions tab**:
+   - Program: `curl.exe` (full path: `C:\Users\moses\Downloads\curl-8.13.0_4-win64-mingw\curl-8.13.0_4-win64-mingw\bin\curl.exe`)
+   - Arguments: `-s http://localhost/attendance_system/api/api.php?action=mark_absent_students`
+
+#### 2. Automated Reports
+- **Daily Report**:
+  - Name: "Send Daily Attendance Report"
+  - Trigger: Daily at specific time (e.g. 6:30 PM)
+  - Same curl path with arguments: `-s http://localhost/attendance_system/api/sendreport.php`
+
+- **Monthly Report**:
+  - Name: "Send Monthly Attendance Report"
+  - Trigger: Monthly on day 1 at specific time
+  - Same curl path with same arguments as daily report
+
 ## Enrollment Process
 
 ### Student Registration
@@ -149,6 +177,7 @@ sequenceDiagram
 | LCD display issues | Verify I2C address (0x27/0x3F) |
 | Database errors | Check config.php credentials |
 | Mobile connection fails | Disable firewall temporarily |
+| Scheduled tasks not running | Verify curl path and check Task Scheduler history |
 
 ## License
 MIT License 
@@ -176,4 +205,4 @@ SOFTWARE.
 
 **Support & Contact**  
 📧 Help: [Instagram @spacey6849](https://instagram.com/spacey6849)  
-🐛 Issues: [GitHub Issues](https://github.com/Spacey6849/smart-fingerprint-attendance-system/issues)  
+🐛 Issues: [GitHub Issues](https://github.com/Spacey6849/smart-fingerprint-attendance-system/issues)
